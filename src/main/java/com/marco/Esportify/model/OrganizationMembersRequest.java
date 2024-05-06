@@ -1,6 +1,5 @@
 package com.marco.Esportify.model;
 
-import com.marco.Esportify.domain.Organization;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +11,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAuthenticationResponse {
+public class OrganizationMembersRequest {
     private String name;
-    private List<Organization> organization;
+    private String email;
+    private String phone;
+    private String role;
 }

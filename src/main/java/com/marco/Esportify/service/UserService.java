@@ -1,10 +1,9 @@
 package com.marco.Esportify.service;
 
 import com.marco.Esportify.domain.Organization;
+import com.marco.Esportify.domain.Role;
 import com.marco.Esportify.domain.User;
-import com.marco.Esportify.model.UserAuthenticationResponse;
-import com.marco.Esportify.model.UserRegistrationRequest;
-import com.marco.Esportify.model.UserRegistrationResponse;
+import com.marco.Esportify.model.*;
 import com.marco.Esportify.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -26,6 +25,7 @@ public class UserService {
                 .name(userRegistrationRequest.getName())
                 .email(userRegistrationRequest.getEmail())
                 .phone(userRegistrationRequest.getPhone())
+                .role(Role.REGISTERED)
                 .build();
 
         System.out.println(userRegistrationRequest);
@@ -43,23 +43,64 @@ public class UserService {
                 .build();
     }
 
-    public void setOrganization(String id, Organization organization) {
+    public User setOrganization(String id, Organization organization) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) throw new RuntimeException("Invalid authentication");
 
-        optionalUser.get().setOrganization(organization);
+        optionalUser.get().getOrganizations().add(organization);
+        optionalUser.get().setRole(Role.ORGANIZATION_ADMIN);
 
         userRepository.save(optionalUser.get());
+
+        return optionalUser.get();
     }
 
-    public UserAuthenticationResponse getAuthentication(String id) {
+    public User getAuthentication(String id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) throw new RuntimeException("Invalid authentication");
-        System.out.println(optionalUser.get());
 
-        return UserAuthenticationResponse.builder()
-                .name(optionalUser.get().getName())
-                .organization(optionalUser.get().getOrganization())
+        return optionalUser.get();
+    }
+
+    public UserProfileResponse getProfile(String id) {
+        User user = getAuthentication(id);
+
+        return UserProfileResponse.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .address(user.getAddress())
+                .country(user.getCountry())
+                .instagram(user.getInstagram())
+                .twitter(user.getTwitter())
                 .build();
+    }
+
+    public UserProfileResponse patchProfile(UserProfileRequest userProfileRequest, String id) {
+        User user = getAuthentication(id);
+
+        if(userProfileRequest.getAddress() != null) user.setAddress(userProfileRequest.getAddress());
+        if (userProfileRequest.getCountry() != null) user.setAddress(userProfileRequest.getCountry());
+        if (userProfileRequest.getInstagram() != null) user.setInstagram(userProfileRequest.getInstagram());
+        if(userProfileRequest.getTwitter() != null) user.setTwitter(userProfileRequest.getTwitter());
+
+        User userSaved = userRepository.save(user);
+
+        return UserProfileResponse.builder()
+                .name(userSaved.getName())
+                .email(userSaved.getEmail())
+                .phone(userSaved.getPhone())
+                .address(userSaved.getAddress())
+                .country(userSaved.getCountry())
+                .instagram(userSaved.getInstagram())
+                .twitter(userSaved.getTwitter())
+                .build();
+    }
+
+    public User getUserByEmail(String email) {
+        Optional<User> user = userRepository.getUserByEmail(email);
+        if(user.isEmpty()) throw new RuntimeException("User not found");
+
+        return user.get();
     }
 }

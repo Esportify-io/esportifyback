@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @Builder
@@ -14,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -21,8 +24,12 @@ public class User {
     private String email;
     private String password;
     private String phone;
+    private String address;
+    private String twitter;
+    private String instagram;
+    private String country;
+    private Role role;
 
-    @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @ManyToMany(mappedBy = "members")
+    private List<Organization> organizations;
 }

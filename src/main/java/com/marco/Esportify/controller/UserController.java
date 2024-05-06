@@ -1,8 +1,7 @@
 package com.marco.Esportify.controller;
 
-import com.marco.Esportify.model.UserAuthenticationResponse;
-import com.marco.Esportify.model.UserRegistrationRequest;
-import com.marco.Esportify.model.UserRegistrationResponse;
+import com.marco.Esportify.domain.User;
+import com.marco.Esportify.model.*;
 import com.marco.Esportify.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,10 +24,23 @@ public class UserController {
     }
 
     @GetMapping("/authentication")
-    public ResponseEntity<UserAuthenticationResponse> getAuthentication(Authentication authentication) {
+    public ResponseEntity<User> getAuthentication(Authentication authentication) {
         Jwt jwtToken = (Jwt) authentication.getPrincipal();
         String id = jwtToken.getSubject();
-        System.out.println(id);
         return ResponseEntity.ok().body(userService.getAuthentication(id));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileResponse> getProfile(Authentication authentication) {
+        Jwt jwtToken = (Jwt) authentication.getPrincipal();
+        String id = jwtToken.getSubject();
+        return ResponseEntity.ok().body(userService.getProfile(id));
+    }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<UserProfileResponse> patchProfile(@RequestBody UserProfileRequest userProfileRequest, Authentication authentication) {
+        Jwt jwtToken = (Jwt) authentication.getPrincipal();
+        String id = jwtToken.getSubject();
+        return ResponseEntity.ok().body(userService.patchProfile(userProfileRequest, id));
     }
 }

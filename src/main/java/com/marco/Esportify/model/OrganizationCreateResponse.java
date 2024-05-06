@@ -6,13 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAuthenticationResponse {
-    private String name;
-    private List<Organization> organization;
+public class OrganizationCreateResponse {
+    private Organization organization;
+    private String status;
 }

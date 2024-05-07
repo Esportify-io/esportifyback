@@ -18,9 +18,29 @@ public class OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final UserService userService;
 
+    public OrganizationJoinResponse join(OrganizationJoinRequest organizationJoinRequest, String id) {
+        System.out.println(organizationJoinRequest.getCode());
+        Optional<Organization> optionalOrganization = organizationRepository.findByInviteCode(organizationJoinRequest.getCode());
+        if(optionalOrganization.isEmpty()) throw new RuntimeException("Organization not found");
+
+        User user = userService.getAuthentication(id);
+        optionalOrganization.get().getMembers().add(user);
+
+        Organization organizationSaved = organizationRepository.save(optionalOrganization.get());
+
+        userService.joinOrganization(id, organizationSaved);
+
+        return OrganizationJoinResponse.builder()
+                .organization(organizationSaved)
+                .status("CREATED")
+                .build();
+    }
+
     public OrganizationCreateResponse create(OrganizationCreateRequest organizationCreateRequest, String id) {
         Optional<Organization> optionalOrganization = organizationRepository.findByName(organizationCreateRequest.getName());
         if (optionalOrganization.isPresent()) throw new RuntimeException("Organization already exists");
+
+        System.out.println(organizationCreateRequest.getName());
 
         Organization organization = Organization.builder()
                 .name(organizationCreateRequest.getName())

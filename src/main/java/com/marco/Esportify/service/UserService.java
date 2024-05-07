@@ -103,4 +103,16 @@ public class UserService {
 
         return user.get();
     }
+
+    public User joinOrganization(String id, Organization organization) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) throw new RuntimeException("Invalid authentication");
+
+        optionalUser.get().getOrganizations().add(organization);
+        optionalUser.get().setRole(Role.ORGANIZATION_MEMBER);
+
+        userRepository.save(optionalUser.get());
+
+        return optionalUser.get();
+    }
 }

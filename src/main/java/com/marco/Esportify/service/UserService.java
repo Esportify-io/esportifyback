@@ -80,9 +80,9 @@ public class UserService {
         User user = getAuthentication(id);
 
         if(userProfileRequest.getAddress() != null) user.setAddress(userProfileRequest.getAddress());
-        if (userProfileRequest.getCountry() != null) user.setAddress(userProfileRequest.getCountry());
         if (userProfileRequest.getInstagram() != null) user.setInstagram(userProfileRequest.getInstagram());
         if(userProfileRequest.getTwitter() != null) user.setTwitter(userProfileRequest.getTwitter());
+        if (userProfileRequest.getCountry() != null) user.setCountry(userProfileRequest.getCountry());
 
         User userSaved = userRepository.save(user);
 

@@ -1,5 +1,6 @@
 package com.marco.Esportify.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,10 +1,13 @@
 package com.marco.Esportify.service;
 
 import com.marco.Esportify.domain.Organization;
+import com.marco.Esportify.domain.Team;
 import com.marco.Esportify.domain.User;
 import com.marco.Esportify.model.*;
 import com.marco.Esportify.repository.OrganizationRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ public class OrganizationService {
 
     private final OrganizationRepository organizationRepository;
     private final UserService userService;
+    private final TeamService teamService;
 
     public OrganizationJoinResponse join(OrganizationJoinRequest organizationJoinRequest, String id) {
         System.out.println(organizationJoinRequest.getCode());
@@ -110,5 +114,25 @@ public class OrganizationService {
                 .status("SUCCESS")
                 .new_code(organizationSaved.getInviteCode())
                 .build();
+    }
+
+    public List<OrganizationTeamsResponse> getTeams(String id) {
+        User user = userService.getAuthentication(id);
+        Organization organization = user.getOrganizations().get(0);
+        return organization.getTeams().stream()
+                .map(e -> OrganizationTeamsResponse.builder()
+                        .id(e.getId())
+                        .name(e.getName())
+                        .members(e.getMembers())
+                        .build())
+                .toList();
+    }
+
+    public TeamUserAddResponse addUserToTeam(TeamUserAddRequest teamUserAddRequest) {
+        User user = userService.getUserByEmail(teamUserAddRequest.getUser_email());
+        teamService.addPlayer(teamUserAddRequest.getTeam_id(), user);
+
+        return TeamUserAddResponse.builder()
+                .status("SUCCESS").build();
     }
 }

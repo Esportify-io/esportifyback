@@ -33,4 +33,7 @@ public class Team {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     @JsonIgnore
     private List<User> members;
+
+    @OneToMany
+    private List<Event> events;
 }

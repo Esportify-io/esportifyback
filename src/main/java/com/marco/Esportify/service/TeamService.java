@@ -76,4 +76,10 @@ public class TeamService {
         team.getMembers().add(user);
         teamRepository.save(team);
     }
+
+    public Team getTeam(Long teamId) {
+        Optional<Team> teamOptional = teamRepository.findById(teamId);
+        if (teamOptional.isEmpty()) throw new RuntimeException("Team not found");
+        return teamOptional.get();
+    }
 }
